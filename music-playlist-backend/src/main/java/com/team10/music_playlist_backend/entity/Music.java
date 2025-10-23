@@ -30,7 +30,4 @@ public class Music {
 
     @Column(name = "song_key")
     private String key;
-
-    @Column(columnDefinition = "TEXT")
-    private String lyrics;
 }
