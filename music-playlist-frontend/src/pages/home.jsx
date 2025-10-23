@@ -2,8 +2,12 @@ import { FiLogOut } from "react-icons/fi";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Home, User } from "lucide-react";
 import Profile from "./profile";
+import MiniYoutubePlayer from "../components/player/player";
+import { useState } from "react";
 
 const HomeP = () => {
+  const [isPlayer, setIsPlayer] = useState(true);
+  
   return (
     <div className="bg-red-300 min-h-screen max-w-2xl mx-auto flex flex-col items-center">
         <header className="fixed top-0 w-full z-40 max-w-2xl bg-white flex justify-between items-center border-b border-gray-400 p-4">
@@ -61,6 +65,7 @@ const HomeP = () => {
           </div>
         </Tabs.Root>
       </div>
+      {isPlayer && (<MiniYoutubePlayer />)}
     </div>
   );
 };
