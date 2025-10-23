@@ -18,14 +18,18 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public User signup(String username, String fullname, String email, String password) {
+    public LoginResponse signup(String username, String fullname, String email, String password) {
         User user = User.builder()
                 .username(username)
                 .fullName(fullname)
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .build();
-        return userRepository.save(user);
+
+        userRepository.save(user);
+        String token = jwtUtil.generateAccessToken(email);
+
+        return new LoginResponse(token, user);
     }
 
     public LoginResponse login(String email, String password) {

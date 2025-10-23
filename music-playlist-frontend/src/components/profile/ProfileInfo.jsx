@@ -16,7 +16,7 @@ const ProfileInfo = ({ user, playListSize, onEditProfile }) => {
               <div className="flex items-center space-x-4">
                 <Avatar size="xlarge" />
                 <div>
-                  <h1 className="mb-3">{user?.name}</h1>
+                  <h1 className="mb-3">{user?.username}</h1>
                   <p>플레이 리스트: {playListSize}</p>
                 </div>
               </div>

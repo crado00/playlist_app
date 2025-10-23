@@ -16,8 +16,8 @@ public class AuthController {
     private final AuthService authService;
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
-        authService.signup(req.username, req.fullname, req.email, req.password);
-        return ResponseEntity.ok("회원가입이 완료되었습니다.");
+        LoginResponse loginResponse = authService.signup(req.username, req.fullname, req.email, req.password);
+        return ResponseEntity.ok(loginResponse);
     }
 
     @PostMapping("/login")

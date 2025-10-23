@@ -6,12 +6,11 @@ import useUserStore from "../store/userstore";
 import EditProfile from "../components/profile/editProfile";
 
 const Profile = () => {
-  const { userId } = useParams();
   const { userProfile, getUserProfile } = useUserStore();
 
     const [showEditModal, setShowEditModal] = useState(false);
     
-    const user = { id: userId, name: "User " + userId };
+    const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
 
     
     // 임시 데이터
@@ -25,7 +24,7 @@ const Profile = () => {
 
   const playListSize = playlist ? playlist.length : 0;
   return <div className="bg-red-100">
-    <div className="bg-white min-h-screen max-w-2xl mx-auto flex flex-col">
+    <div className="bg-white min-h-screen max-w-2xl mx-auto">
 
       <ProfileInfo user={ user } playListSize={playListSize} onEditProfile={() => setShowEditModal(true)}/>
 
@@ -35,9 +34,10 @@ const Profile = () => {
     </div>
     {showEditModal && (
         <EditProfile
+        user={user}
         onClose={() => {
             setShowEditModal(false);
-            getUserProfile(userId);
+            getUserProfile(user.id);
           }}
           />
     )}

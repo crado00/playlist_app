@@ -28,7 +28,7 @@ const Login = () => {
 
       console.log(loginData);
       await login(loginData);
-      navigate("/");
+      
     } catch (err) {
       console.error(err);
     }
