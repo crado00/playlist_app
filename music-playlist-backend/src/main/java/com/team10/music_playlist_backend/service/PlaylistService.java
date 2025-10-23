@@ -10,12 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PlaylistService {
+
     private final PlaylistRepository playlistRepository;
     private final UserRepository userRepository;
     private final MusicRepository musicRepository;
@@ -48,62 +49,50 @@ public class PlaylistService {
         }
 
         playlistRepository.save(playlist);
-        return mapToResponse(playlist);
+        return PlaylistResponse.fromEntity(playlist);
     }
 
-    public List<PlaylistResponse> getUserPlaylists(Long userId) {
-        List<Playlist> playlists = playlistRepository.findByUserId(userId);
-        return playlists.stream().map(this::mapToResponse).collect(Collectors.toList());
-    }
-
-    public PlaylistResponse getPlaylist(Long playlistId) {
-        Playlist playlist = playlistRepository.findById(playlistId)
+    public Playlist getPlaylistById(Long playlistId) {
+        return playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
-        return mapToResponse(playlist);
     }
 
     @Transactional
-    public void deletePlaylist(Long playlistId, String userId) {
-        Playlist playlist = playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
-        if (!playlist.getUser().getId().equals(userId)) {
-            throw new RuntimeException("삭제 권한이 없습니다.");
-        }
-        playlistRepository.delete(playlist);
-    }
-
-    @Transactional
-    public Playlist editPlaylist(Long playlistId, PlaylistEditRequest request, String userId) {
+    public Playlist editPlaylist(Long playlistId, PlaylistEditRequest request, String username) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
 
-        if (!playlist.getUser().getId().equals(userId)) {
-            throw new RuntimeException("이 플레이리스트를 수정할 권한이 없습니다.");
+        if (!playlist.getUser().getUsername().equals(username)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "수정 권한이 없습니다.");
         }
 
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             playlist.setTitle(request.getTitle());
         }
-
         if (request.getExplanation() != null) {
             playlist.setExplanation(request.getExplanation());
         }
 
         if (request.getMusicIds() != null && !request.getMusicIds().isEmpty()) {
-            // 기존 Music 제거
-            playlist.getMusics().clear();
-
             List<Music> musics = musicRepository.findAllById(request.getMusicIds());
-            musics.forEach(music -> music.setPlaylist(playlist));
+            musics.forEach(m -> m.setPlaylist(playlist));
+            playlist.getMusics().clear();
             playlist.getMusics().addAll(musics);
         }
 
         return playlistRepository.save(playlist);
     }
 
-    public Playlist getPlaylistById(Long playlistId) {
-        return playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new RuntimeException("Playlist not found"));
+    @Transactional
+    public void deletePlaylist(Long playlistId, String username) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
+
+        if (!playlist.getUser().getUsername().equals(username)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제 권한이 없습니다.");
+        }
+
+        playlistRepository.delete(playlist);
     }
 
     @Transactional
@@ -112,27 +101,33 @@ public class PlaylistService {
                 .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
 
         if (!playlist.getUser().getUsername().equals(username)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 플레이리스트를 수정할 권한이 없습니다.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
         }
 
-        Music music = musicRepository.findById(musicId)
-                .orElseThrow(() -> new ResourceNotFoundException("음악을 찾을 수 없습니다."));
-
-        playlist.getMusics().removeIf(m -> m.getId().equals(music.getId()));
+        playlist.getMusics().removeIf(m -> m.getId().equals(musicId));
         playlistRepository.save(playlist);
     }
 
-    private PlaylistResponse mapToResponse(Playlist playlist) {
-        List<MusicResponse> musicResponses = playlist.getMusics().stream()
-                .map(MusicResponse::fromEntity)
+    @Transactional
+    public Playlist reorderPlaylist(Long playlistId, List<Long> orderedMusicIds, String username) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
+
+        if (!playlist.getUser().getUsername().equals(username)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+        }
+
+        Map<Long, Music> musicMap = playlist.getMusics().stream()
+                .collect(Collectors.toMap(Music::getId, m -> m));
+
+        List<Music> newOrder = orderedMusicIds.stream()
+                .map(musicMap::get)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        return PlaylistResponse.builder()
-                .id(playlist.getId())
-                .title(playlist.getTitle())
-                .explanation(playlist.getExplanation())
-                .imageUrl(playlist.getImageUrl())
-                .musics(musicResponses)
-                .build();
+        playlist.getMusics().clear();
+        playlist.getMusics().addAll(newOrder);
+
+        return playlistRepository.save(playlist);
     }
 }
