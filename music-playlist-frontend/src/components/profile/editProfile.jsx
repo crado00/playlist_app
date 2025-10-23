@@ -2,46 +2,35 @@ import { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 import userService from "../../services/user";
 import Avatar from "../common/Avatar";
-// import useAuthStore from "../store/authStore";
+import useAuthStore from "../../store/authStore";
 
 const EditProfile = ({ onClose, currentProfile, user }) => {
- //const { user, setAuth } = useAuthStore();
+  const { user: authUser, setAuth } = useAuthStore();
 
-  const [formData, setFormData] = useState(user ? {
-    username: user.username || "",
-    fullName: user.fullName || "",
-    residentialArea: user.residentialArea || "",
-    selfIntroduction: user.selfIntroduction || "",
-  } : {
-    username: "",
-    fullName: "",
-    residentialArea: "",
-    selfIntroduction: "",
+  // ✅ 초기 상태 (일관된 key 이름 사용)
+  const [formData, setFormData] = useState({
+    username: user?.username || "",
+    fullName: user?.fullName || "",
+    residentialArea: user?.residentialArea || "",
+    selfIntroduction: user?.selfIntroduction || "",
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ 초기값 세팅
-  /*
+  // ✅ 프로필 정보 반영 (currentProfile 또는 user 중 존재하는 값으로)
   useEffect(() => {
-    if (currentProfile) {
+    const profile = currentProfile || user;
+    if (profile) {
       setFormData({
-        username: currentProfile.username || "",
-        fullname: currentProfile.fullname || "",
-        residential_area: currentProfile.residential_area || "",
-        bio: currentProfile.bio || "",
-      });
-    } else if (user) {
-      setFormData({
-        username: user.username || "",
-        fullname: user.fullname || "",
-        residential_area: user.residential_area || "",
-        bio: user.bio || "",
+        username: profile.username || "",
+        fullName: profile.fullName || "",
+        residentialArea: profile.residentialArea || "",
+        selfIntroduction: profile.selfIntroduction || "",
       });
     }
   }, [currentProfile, user]);
-*/
+
   // ✅ 입력 변경 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,22 +52,25 @@ const EditProfile = ({ onClose, currentProfile, user }) => {
 
     try {
       setLoading(true);
-      const updatedProfile = await userService.updateProfile(formData);
+
+      // ✅ 실제 API 호출 (userService 사용)
+      const updatedProfile = await userService.updateProfile(formData, authUser.id);
 
       const updatedUser = {
-        ...user,
+        ...authUser,
         ...updatedProfile,
       };
 
+      // ✅ 상태 및 로컬 스토리지 업데이트
       setAuth({
-        user: updatedUser,
+        authUser: updatedUser,
         isAuthenticated: true,
         loading: false,
         error: null,
       });
-
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      onClose?.(); // ✅ 모달 닫기
+
+      onClose?.(); // 모달 닫기
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Failed to update profile");
@@ -107,12 +99,14 @@ const EditProfile = ({ onClose, currentProfile, user }) => {
             <Avatar size="large" className="self-center" />
             <p className="text-center text-2xl">{formData.username || "user"}</p>
           </div>
+
           {error && (
             <div className="text-red-500 bg-red-100 border border-red-300 p-2 rounded-md">
               {error}
             </div>
           )}
 
+          {/* Username */}
           <div className="flex flex-col">
             <label className="mb-1 font-semibold text-gray-700" htmlFor="username">
               Username
@@ -120,50 +114,53 @@ const EditProfile = ({ onClose, currentProfile, user }) => {
             <input
               id="username"
               name="username"
-              value={formData.username}
+              value={formData.username || ""}
               onChange={handleChange}
               className="border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
               placeholder="Enter username"
             />
           </div>
 
+          {/* Full Name */}
           <div className="flex flex-col">
-            <label className="mb-1 font-semibold text-gray-700" htmlFor="fullname">
+            <label className="mb-1 font-semibold text-gray-700" htmlFor="fullName">
               Full Name
             </label>
             <input
               id="fullName"
               name="fullName"
-              value={formData.fullName}
+              value={formData.fullName || ""}
               onChange={handleChange}
               className="border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
               placeholder="Enter full name"
             />
           </div>
 
+          {/* Residential Area */}
           <div className="flex flex-col">
-            <label className="mb-1 font-semibold text-gray-700" htmlFor="residential_area">
+            <label className="mb-1 font-semibold text-gray-700" htmlFor="residentialArea">
               Residential Area
             </label>
             <input
               id="residentialArea"
               name="residentialArea"
-              value={formData.residentialArea}
+              value={formData.residentialArea || ""}
               onChange={handleChange}
               className="border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
               placeholder="Enter your area"
             />
           </div>
 
+          {/* Self Introduction */}
           <div className="flex flex-col">
-            <label className="mb-1 font-semibold text-gray-700" htmlFor="bio">
+            <label className="mb-1 font-semibold text-gray-700" htmlFor="selfIntroduction">
               Self Introduction
             </label>
             <textarea
               id="selfIntroduction"
               name="selfIntroduction"
               rows="4"
-              value={formData.selfIntroduction}
+              value={formData.selfIntroduction || ""}
               onChange={handleChange}
               className="border p-2 rounded-lg focus:ring-2 focus:ring-blue-400 resize-none"
               placeholder="Tell us about yourself"
