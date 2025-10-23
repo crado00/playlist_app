@@ -16,7 +16,7 @@ public class PlaylistResponse {
     private String title;
     private String explanation;
     private String imageUrl;
-    //private List<MusicResponse> musics;
+    private List<MusicResponse> musics;
 
     public static PlaylistResponse fromEntity(Playlist playlist) {
         return PlaylistResponse.builder()
@@ -24,10 +24,9 @@ public class PlaylistResponse {
                 .title(playlist.getTitle())
                 .explanation(playlist.getExplanation())
                 .imageUrl(playlist.getImageUrl())
-//                .musics(playlist.getPlaylistMusics().stream()
-//                        .sorted((a, b) -> Long.compare(a.getSequence(), b.getSequence()))
-//                        .map(ps -> MusicResponse.fromEntity(ps.getMusic(), ps.getSequence()))
-//                        .collect(Collectors.toList()))
+                .musics(playlist.getMusics().stream()
+                        .map(MusicResponse::fromEntity)
+                        .collect(Collectors.toList()))
                 .build();
     }
 }
