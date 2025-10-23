@@ -4,15 +4,19 @@ import userService from "../../services/user";
 import Avatar from "../common/Avatar";
 // import useAuthStore from "../store/authStore";
 
-const EditProfile = ({ onClose, currentProfile }) => {
+const EditProfile = ({ onClose, currentProfile, user }) => {
  //const { user, setAuth } = useAuthStore();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(user ? {
+    username: user.username || "",
+    fullName: user.fullName || "",
+    residentialArea: user.residentialArea || "",
+    selfIntroduction: user.selfIntroduction || "",
+  } : {
     username: "",
     fullName: "",
     residentialArea: "",
     selfIntroduction: "",
-    profileImageUrl: null,
   });
 
   const [loading, setLoading] = useState(false);
