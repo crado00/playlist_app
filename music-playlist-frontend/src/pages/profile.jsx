@@ -4,13 +4,15 @@ import ProfileInfo from "../components/profile/ProfileInfo";
 import ProfilePlayList from "../components/profile/ProfilePlayList";
 import useUserStore from "../store/userstore";
 import EditProfile from "../components/profile/editProfile";
-
+import usePlayListStore from "../store/playlistStore";
 const Profile = () => {
+  const { userId } = useParams();
   const { userProfile, getUserProfile } = useUserStore();
+  
 
     const [showEditModal, setShowEditModal] = useState(false);
     
-    const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+    const user = { id: userId, name: "User " + userId };
 
     
     // 임시 데이터
@@ -22,9 +24,17 @@ const Profile = () => {
         { id: 5, name: "User 5", explanation: "nice" },
     ]
 
+    const createPlayList = () => {
+        console.log("create playlist");
+    };
+
+    const deletePlayList = (id) => {
+        console.log("delete playlist", id);
+    };
+
   const playListSize = playlist ? playlist.length : 0;
   return <div className="bg-red-100">
-    <div className="bg-white min-h-screen max-w-2xl mx-auto">
+    <div className="bg-white min-h-screen max-w-2xl mx-auto flex flex-col">
 
       <ProfileInfo user={ user } playListSize={playListSize} onEditProfile={() => setShowEditModal(true)}/>
 
@@ -34,10 +44,9 @@ const Profile = () => {
     </div>
     {showEditModal && (
         <EditProfile
-        user={user}
         onClose={() => {
             setShowEditModal(false);
-            getUserProfile(user.id);
+            getUserProfile(userId);
           }}
           />
     )}
