@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import Home from "./pages/home";
+import HomeP from "./pages/home";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Profile from "./pages/profile";
@@ -19,7 +19,7 @@ const App = () => {
         {/* 로그인 관련 */}
         <Route
           path="/"
-          element={isAuthenticated ? <Home /> : <Navigate to="/login" />}
+          element={isAuthenticated ? <HomeP /> : <Navigate to="/login" />}
         />
         <Route
           path="/login"
