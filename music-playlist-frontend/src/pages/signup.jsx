@@ -20,10 +20,6 @@ function Signup() {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (form.password !== form.confirmPassword) {
-      alert("비밀번호가 일치하지 않습니다.");
-      return;
-    }
 
     useAuthStore.getState().register(form)
       .then((data) => {
@@ -35,7 +31,6 @@ function Signup() {
         // 회원가입 실패 후 처리 (예: 에러 메시지 표시)
       });
 
-    console.log("회원가입 정보:", form);
     // 실제 회원가입 API 요청 코드 작성 위치
   };
 
