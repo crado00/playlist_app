@@ -12,6 +12,7 @@ function MusicSearch() {
     setLoading(true);
     setSongs([]);
 
+    {/* 음악 정보 연결 */}
     try {
       const response = await fetch(
         `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=12`
