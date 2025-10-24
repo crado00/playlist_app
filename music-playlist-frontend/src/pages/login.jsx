@@ -75,7 +75,7 @@ const Login = () => {
               className="mt-4"
               type="submit"
               disabled={
-                loading || !formData.emailOrUsername || !formData.password
+                loading || !formData.email || !formData.password
               }
             >
               {loading ? "Logging in..." : "Log in"}

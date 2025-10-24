@@ -5,6 +5,7 @@ const PlayListCard = ({ id, name, explanation, deletePlayList }
 
   return (
       <div className="w-50 h-80 flex flex-col gap-2 rounded-xl border">
+
         <img
             src="https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
             alt={id}
