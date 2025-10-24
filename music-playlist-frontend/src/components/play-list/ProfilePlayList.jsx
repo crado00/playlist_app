@@ -2,7 +2,7 @@ import { use, useEffect } from "react";
 import Button from "../common/Button";
 import PlayListCard from "./PlayListCard";
 
-const ProfilePlayList = ({ playList, deletePlayList, createPlayList, playlistEdit, onSelect}) => {
+const ProfilePlayList = ({ playList, deletePlayList, createPlayList, onSelect}) => {
 
   return (
       <div className="p-4 border-divider flex gap-4 flex-wrap">

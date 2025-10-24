@@ -19,7 +19,10 @@ const PlayListCard = ({ id, name, explanation, deletePlayList }
           <Button
             title="삭제"
             customStyles="border border-black bg-red-500 w-full text-sm py-1 h-8"
-            onClick={() => deletePlayList(id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              deletePlayList(id)
+            }}
             />
         </div>
       </div>
