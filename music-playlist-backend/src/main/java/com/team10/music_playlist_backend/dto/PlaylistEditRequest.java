@@ -1,5 +1,6 @@
 package com.team10.music_playlist_backend.dto;
 
+import com.team10.music_playlist_backend.entity.Music;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,5 @@ import java.util.List;
 public class PlaylistEditRequest {
     private String title;
     private String explanation;
-    private List<Long> musicIds;
+    private List<Music> musics;
 }
