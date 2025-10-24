@@ -11,7 +11,7 @@ import PlayListDetail from "../components/play-list/playlistDetail";
 const Profile = () => {
   const { userProfile, getUserProfile, updateProfile } = useUserStore(); // ✅ 이름 수정
   const [showEditModal, setShowEditModal] = useState(false);
-  const { getPlaylistsByUser } = usePlayListStore();
+  const { getPlaylistsByUser, deletePlaylist} = usePlayListStore();
   const [showplaylistCreateModal, setShowPlaylistCreateModal] = useState(false);
   const [isPlaylistEdit, setIsPlaylistEdit] = useState(false);
   const [selectedPlayList, setSelectedPlayList] = useState(null);
@@ -35,10 +35,15 @@ const Profile = () => {
     fetchData();
   }, []);
 
-
+  useEffect(() => {
+    const playlistsFromStore = usePlayListStore.getState().playlists;
+    setPlaylist(playlistsFromStore);
+  }, [usePlayListStore.getState().playlists]);
 
     const deletePlayList = (id) => {
-        console.log("delete playlist", id);
+        deletePlaylist(id);
+      const playlistsFromStore = usePlayListStore.getState().playlists;
+        setPlaylist(playlistsFromStore);
     };
 
     const playlistCreateOrEdit = () => {
@@ -76,6 +81,7 @@ const Profile = () => {
           playList={playlist}
           createPlayList={playlistCreate}
           onSelect={onSelectPlayList}
+          deletePlayList={deletePlayList}
           />
         </div>
       </div>
