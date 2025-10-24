@@ -12,8 +12,8 @@ import com.team10.music_playlist_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,15 +22,30 @@ public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final UserRepository userRepository;
     private final MusicRepository musicRepository;
+    private final SearchService searchService;
 
     public PlaylistResponse createPlaylist(Long userId, PlaylistRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
+        List<Music> musicList = request.getMusics().stream()
+                .map(songDto -> musicRepository.findById(songDto.getId())
+                        .orElseGet(() -> {
+                            // DB에 없으면 새로 저장
+                            Music newMusic = Music.builder()
+                                    .id(songDto.getId())
+                                    .title(songDto.getName())      // DTO의 이름 -> 엔티티 title
+                                    .artist(songDto.getSinger())
+                                    .build();
+                            return musicRepository.save(newMusic);
+                        })
+                ).toList();
+
         Playlist playlist = Playlist.builder()
                 .title(request.getTitle())
                 .explanation(request.getExplanation())
                 .imageUrl(request.getImageUrl())
+                .musics(musicList)
                 .user(user)
                 .build();
 

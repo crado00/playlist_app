@@ -5,10 +5,15 @@ import Profile from "./profile";
 import MiniYoutubePlayer from "../components/player/player";
 import { useState } from "react";
 import MusicSearch from "./MusicSearch";
-
+import useAuthStore from "../store/authStore";
 const HomeP = () => {
   const [isPlayer, setIsPlayer] = useState(false);
+  const { logout } = useAuthStore();
   
+  const hendlerlogout = () => {
+    // 로그아웃 로직 구현
+    logout();
+  };
   return (
     <div className="min-h-screen max-w-2xl mx-auto flex flex-col items-center">
       <header className="fixed top-0 w-full z-40 max-w-2xl bg-white flex justify-between items-center border-b border-gray-400 p-4">
@@ -18,6 +23,7 @@ const HomeP = () => {
             className="text-black hover:text-red-500 transition-colors"
             title="Logout"
             aria-label="Logout"
+            onClick={hendlerlogout}
           >
             <FiLogOut size={24} />
           </button>

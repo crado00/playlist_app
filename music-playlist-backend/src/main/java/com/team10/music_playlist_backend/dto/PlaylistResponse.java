@@ -24,9 +24,12 @@ public class PlaylistResponse {
                 .title(playlist.getTitle())
                 .explanation(playlist.getExplanation())
                 .imageUrl(playlist.getImageUrl())
-                .musics(playlist.getMusics().stream()
+                .musics(playlist.getMusics() == null
+                        ? List.of()
+                        : playlist.getMusics().stream()
                         .map(SongDetailsResponse::fromEntity)
                         .collect(Collectors.toList()))
+
                 .build();
     }
 }

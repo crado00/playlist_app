@@ -1,12 +1,14 @@
 import Button from "../common/Button";
-
+import { useEffect, useState } from "react";
 const PlayListDetail = ({ playlist, onClose, onEdit }) => {
-  const songs = [
-    { id: 1, title: "Song A" },
-    { id: 2, title: "Song B" },
-    { id: 3, title: "Song C" },
-  ];
+  const [songs, setSong] = useState(playlist.song || []);
 
+useEffect(() => {
+  if (playlist && playlist.musics) {
+    setSong(playlist.musics);
+    console.log("PlaylistDetail useEffect songs: ", playlist.musics);
+  }
+}, [playlist]); // playlist가 바뀔 때만 실행
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white w-11/12 max-w-lg rounded-xl p-6 relative">
@@ -17,7 +19,7 @@ const PlayListDetail = ({ playlist, onClose, onEdit }) => {
           ✕
         </button>
 
-        <h2 className="text-2xl font-bold mb-2">{playlist.name}</h2>
+        <h2 className="text-2xl font-bold mb-2">{playlist.title}</h2>
         <p className="text-gray-600 mb-4">{playlist.explanation}</p>
 
         <div className="flex flex-col gap-3">
@@ -26,11 +28,11 @@ const PlayListDetail = ({ playlist, onClose, onEdit }) => {
               key={song.id}
               className="flex justify-between items-center p-2 border rounded hover:bg-gray-100"
             >
-              <span>{song.title}</span>
+              <span>{song.name}</span>
               <Button
                 title="재생"
                 customStyles="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
-                onClick={() => console.log(`재생 버튼 클릭: ${song.title}`)}
+                onClick={() => console.log(`재생 버튼 클릭: ${song.name}`)}
               />
             </div>
           ))}
