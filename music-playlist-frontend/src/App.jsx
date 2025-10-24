@@ -4,6 +4,7 @@ import HomeP from "./pages/home";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Profile from "./pages/profile";
+import MusicSearch from "./components/MusicSearch";
 import useAuthStore from "./store/authStore";
 
 const App = () => {
@@ -32,6 +33,11 @@ const App = () => {
 
         {/* 프로필 관련 */}
         <Route path="/profile" element={<Profile />} />
+
+        {/* 음악검색 관련 */}
+        <Route path="/musicsearch" element={<MusicSearch />} />
+
+
       </Routes>
     </BrowserRouter>
   );
