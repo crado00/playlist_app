@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import ProfileInfo from "../components/profile/ProfileInfo";
 import ProfilePlayList from "../components/profile/ProfilePlayList";
 import useUserStore from "../store/userstore";
@@ -36,21 +36,31 @@ const Profile = () => {
   return <div className="bg-red-100">
     <div className="bg-white min-h-screen max-w-2xl mx-auto flex flex-col">
 
-      <ProfileInfo user={ user } playListSize={playListSize} onEditProfile={() => setShowEditModal(true)}/>
+  return (
+    <div className="bg-red-100">
+      <div className="bg-white min-h-screen max-w-2xl mx-auto">
+        <ProfileInfo
+          user={user}
+          playListSize={playListSize}
+          onEditProfile={() => setShowEditModal(true)}
+        />
 
-      <div className="flex-grow">
-        <ProfilePlayList playList={playlist}/>
+        <div className="flex-grow">
+          <ProfilePlayList playList={playlist} />
+        </div>
       </div>
-    </div>
-    {showEditModal && (
+
+      {showEditModal && (
         <EditProfile
         onClose={() => {
             setShowEditModal(false);
             getUserProfile(userId);
           }}
-          />
-    )}
-  </div>;
+          currentProfile={userProfile} // ✅ 함수가 아니라 실제 데이터 전달
+        />
+      )}
+    </div>
+  );
 };
 
 export default Profile;
