@@ -64,10 +64,9 @@ const Profile = () => {
       setShowPlaylistCreateModal(true);
     }
   const playListSize = playlist ? playlist.length : 0;
-  return <div className="bg-red-100">
-    <div className="bg-white min-h-screen max-w-2xl mx-auto flex flex-col">
-
   return (
+
+
     <div className="bg-red-100">
       <div className="bg-white min-h-screen max-w-2xl mx-auto">
         <ProfileInfo
@@ -110,6 +109,7 @@ const Profile = () => {
           onEdit={handleEditClick}
       />
 )}
+      </div>
     </div>
   );
 };
