@@ -1,12 +1,37 @@
 import { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
+import { authService } from "../../services/auth";
+import usePlayListStore from "../../store/playlistStore";
 
-const PlayListCreate = ({ onClose, onCreate }) => {
+const PlayListCreate = ({ onClose, onCreate, isEdit, playlist }) => {
+  const [user, setUser] = useState(null);
+  const { createPlaylist, updatePlaylist } = usePlayListStore();
+
+  useEffect(() => {
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
+  }, []);
+  
+
+  const handleCreateOrEdit = () => {
+    const name = document.getElementById("playlist-name").value;
+    const explanation = document.getElementById("playlist-description").value;
+    if (isEdit) {
+      const playlistId = playlist.id;
+      const playlistData = { name, explanation, userId: user.id };
+      updatePlaylist(playlistId, playlistData);
+    } else {
+      const playlist = { name, explanation, userId: user.id, playlists: [] };
+      //이름 변경
+      createPlaylist(playlist);
+    }
+    onCreate();
+  };
   return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg w-full max-w-2xl">
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h2 className="text-xl font-bold">플레이 리스트 생성</h2>
+            <h2 className="text-xl font-bold">플레이 리스트 {!isEdit && "생성"}</h2>
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -25,6 +50,7 @@ const PlayListCreate = ({ onClose, onCreate }) => {
               name="playlist-name"
               className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
               placeholder="플레이 리스트 이름을 입력하세요"
+              defaultValue={isEdit && playlist ? playlist.name : ""}
             />
           </div>
           <div className="p-4">
@@ -37,6 +63,7 @@ const PlayListCreate = ({ onClose, onCreate }) => {
               className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
               placeholder="플레이 리스트 설명을 입력하세요"
               rows={3}
+              defaultValue={isEdit && playlist ? playlist.explanation : ""}
             />
           </div>
           <div className="p-4 w-full border-b border-gray-200">
@@ -71,7 +98,7 @@ const PlayListCreate = ({ onClose, onCreate }) => {
               취소
             </button>
             <button
-              onClick={onCreate}
+              onClick={handleCreateOrEdit}
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
             >
               생성

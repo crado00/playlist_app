@@ -4,7 +4,7 @@ export const authService = {
   async login(userData) {
     const response = await api.post("/api/auth/login", userData);
     const { accessToken, user } = response.data;
-
+    console.log("Login Response:", response.data);
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("user", JSON.stringify(user));
 
