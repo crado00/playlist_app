@@ -4,12 +4,13 @@ import { Home, User } from "lucide-react";
 import Profile from "./profile";
 import MiniYoutubePlayer from "../components/player/player";
 import { useState } from "react";
+import MusicSearch from "./MusicSearch";
 
 const HomeP = () => {
-  const [isPlayer, setIsPlayer] = useState(true);
+  const [isPlayer, setIsPlayer] = useState(false);
   
   return (
-    <div className="bg-red-300 min-h-screen max-w-2xl mx-auto flex flex-col items-center">
+    <div className="min-h-screen max-w-2xl mx-auto flex flex-col items-center">
       <header className="fixed top-0 w-full z-40 max-w-2xl bg-white flex justify-between items-center border-b border-gray-400 p-4">
         <h1 className="text-3xl text-black p-2">Music Playlist App</h1>
         <div className="flex justify-end pr-4">
@@ -25,28 +26,13 @@ const HomeP = () => {
 
       <div className="flex-1 w-full max-w-2xl pb-16 pt-20">
         <Tabs.Root defaultValue="home" className="w-full">
-          <Tabs.Content value="home" className="p-4 text-center">
-            <h2 className="text-lg font-medium mb-2">홈 화면</h2>
-            <p className="text-gray-600">여기서 최신 플레이리스트를 확인할 수 있습니다.</p>
-            {/* 홈에서도 임시 플레이리스트 예시 */}
-            <div className="mt-4 flex flex-col gap-2">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="p-2 border rounded cursor-pointer hover:bg-gray-100"
-                  onClick={() =>
-                    openPlayListDetail({ id: i, name: `Playlist ${i}`, explanation: "임시 설명" })
-                  }
-                >
-                  Playlist {i}
-                </div>
-              ))}
-            </div>
+          <Tabs.Content value="home" className="text-center">
+            <MusicSearch />
           </Tabs.Content>
 
           <Tabs.Content value="user">
             {/* Profile에 onSelectPlayList 콜백 전달 */}
-            <Profile onSelectPlayList={openPlayListDetail} />
+            <Profile />
           </Tabs.Content>
 
           {/* 하단 탭바 */}

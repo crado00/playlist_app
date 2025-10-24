@@ -72,7 +72,8 @@ public class PlaylistService {
         playlistRepository.delete(playlist);
     }
 
-    public void removeMusicFromPlaylist(Long playlistId, Long musicId, String username) {
+    // ✅ musicId를 String으로 변경
+    public void removeMusicFromPlaylist(Long playlistId, String musicId, String username) {
         Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
             throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
@@ -82,7 +83,8 @@ public class PlaylistService {
         playlistRepository.save(playlist);
     }
 
-    public Playlist reorderPlaylist(Long playlistId, List<Long> orderedMusicIds, String username) {
+    // ✅ orderedMusicIds를 List<String>으로 변경
+    public Playlist reorderPlaylist(Long playlistId, List<String> orderedMusicIds, String username) {
         Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
             throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
@@ -97,8 +99,8 @@ public class PlaylistService {
         return playlistRepository.save(playlist);
     }
 
-    // 플레이리스트에 음악 추가
-    public Playlist addMusicToPlaylist(Long playlistId, Long musicId, String username) {
+    // ✅ musicId를 String으로 변경
+    public Playlist addMusicToPlaylist(Long playlistId, String musicId, String username) {
         Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
             throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");

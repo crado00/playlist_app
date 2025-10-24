@@ -16,14 +16,17 @@ import java.util.stream.Collectors;
 @Service
 public class SpotifyService {
 
+    private final WebClient webClient;
+
     @Value("${spotify.client-id}")
     private String clientId;
 
     @Value("${spotify.client-secret}")
     private String clientSecret;
 
-    private final WebClient webClient = WebClient.create();
-
+    public SpotifyService(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl("https://api.spotify.com/v1").build();
+    }
     private String getAccessToken() {
         String basic = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
         Map<String, Object> res = webClient.post()

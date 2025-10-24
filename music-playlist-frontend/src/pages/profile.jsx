@@ -65,8 +65,6 @@ const Profile = () => {
     }
   const playListSize = playlist ? playlist.length : 0;
   return (
-
-
     <div className="bg-red-100">
       <div className="bg-white min-h-screen max-w-2xl mx-auto">
         <ProfileInfo
@@ -89,7 +87,7 @@ const Profile = () => {
         <EditProfile
         onClose={() => {
             setShowEditModal(false);
-            getUserProfile(userId);
+            getUserProfile(user.id);
           }}
           currentProfile={userProfile} // ✅ 함수가 아니라 실제 데이터 전달
         />
@@ -110,7 +108,6 @@ const Profile = () => {
       />
 )}
       </div>
-    </div>
   );
 };
 

@@ -18,10 +18,10 @@ const PlayListCreate = ({ onClose, onCreate, isEdit, playlist }) => {
     const explanation = document.getElementById("playlist-description").value;
     if (isEdit) {
       const playlistId = playlist.id;
-      const playlistData = { name, explanation, userId: user.id };
+      const playlistData = { title: name, explanation, userId: user.id, musics: [{}] };
       updatePlaylist(playlistId, playlistData);
     } else {
-      const playlist = { name, explanation, userId: user.id, playlists: [] };
+      const playlist = {title: name, explanation, userId: user.id, musics: [] };
       //이름 변경
       createPlaylist(playlist);
     }
