@@ -46,16 +46,6 @@ const playListService = {
     });
     return response.data;
   },
-
-async getPlaylistsByUser(username) {
-  console.log("Fetching playlists for user:", username);
-  const response = await api.get(`/api/playlists/my`, {
-    params: { username }, // ✅ 이게 핵심
-  });
-  console.log("Fetched user's playlists:", response.data);
-  return response.data;
-}
-
 };
 
 export default playListService;

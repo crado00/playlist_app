@@ -59,6 +59,8 @@ const Profile = () => {
       setShowPlaylistCreateModal(true);
     }
   const playListSize = playlist ? playlist.length : 0;
+  return <div className="bg-red-100">
+    <div className="bg-white min-h-screen max-w-2xl mx-auto flex flex-col">
 
   return (
     <div className="bg-red-100">
@@ -80,10 +82,9 @@ const Profile = () => {
 
       {showEditModal && (
         <EditProfile
-          user={user}
-          onClose={() => {
+        onClose={() => {
             setShowEditModal(false);
-            getUserProfile(user.id);
+            getUserProfile(userId);
           }}
           currentProfile={userProfile} // ✅ 함수가 아니라 실제 데이터 전달
         />
