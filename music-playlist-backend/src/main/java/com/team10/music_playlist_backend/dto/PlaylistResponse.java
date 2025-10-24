@@ -24,9 +24,9 @@ public class PlaylistResponse {
                 .title(playlist.getTitle())
                 .explanation(playlist.getExplanation())
                 .imageUrl(playlist.getImageUrl())
-                .musics(playlist.getMusics().stream()
-                        .map(MusicResponse::fromEntity)
-                        .collect(Collectors.toList()))
+         //       .musics(playlist.getMusics().stream()
+        //                .map(MusicResponse::fromEntity)
+        //                .collect(Collectors.toList()))
                 .build();
     }
 }

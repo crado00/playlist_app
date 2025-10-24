@@ -1,7 +1,8 @@
+import { use, useEffect } from "react";
 import Button from "../common/Button";
 import PlayListCard from "./PlayListCard";
 
-const ProfilePlayList = ({ playList, deletePlayList, createPlayList}) => {
+const ProfilePlayList = ({ playList, deletePlayList, createPlayList, playlistEdit, onSelect}) => {
 
   return (
       <div className="p-4 border-divider flex gap-4 flex-wrap">
@@ -13,10 +14,15 @@ const ProfilePlayList = ({ playList, deletePlayList, createPlayList}) => {
             onClick={createPlayList}
           />
         </div>
-        {playList.map((playList) => (
-            <PlayListCard key={playList.id} {...playList} deletePlayList={deletePlayList}/>
+        {playList.map((item) => (
+          <div
+            key={item.id}
+            className="cursor-pointer"
+            onClick={() => onSelect && onSelect(item)} // 클릭 시 상위 콜백 호출
+          >
+            <PlayListCard {...item} deletePlayList={deletePlayList} />
+          </div>
         ))}
-        
       </div>
     );
 };
