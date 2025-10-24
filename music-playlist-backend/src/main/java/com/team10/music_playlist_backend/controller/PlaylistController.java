@@ -34,14 +34,21 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistResponse);
     }
 
-    // 2️⃣ 플레이리스트 조회
+    // 2️⃣ 특정 플레이리스트 조회
     @GetMapping("/{playlistId}")
     public ResponseEntity<PlaylistResponse> getPlaylistById(@PathVariable Long playlistId) {
         Playlist playlist = playlistService.getPlaylistById(playlistId);
         return ResponseEntity.ok(PlaylistResponse.fromEntity(playlist));
     }
 
-    // 3️⃣ 플레이리스트 수정
+    // 3️⃣ 로그인한 유저의 플레이리스트 목록 조회
+    @GetMapping("/my")
+    public ResponseEntity<List<PlaylistResponse>> getMyPlaylists(@RequestParam String username) {
+        List<PlaylistResponse> playlists = playlistService.getUserPlaylists(username);
+        return ResponseEntity.ok(playlists);
+    }
+
+    // 4️⃣ 플레이리스트 수정
     @PutMapping("/{playlistId}/edit")
     public ResponseEntity<PlaylistResponse> editPlaylist(
             @PathVariable Long playlistId,
@@ -52,7 +59,7 @@ public class PlaylistController {
         return ResponseEntity.ok(PlaylistResponse.fromEntity(playlist));
     }
 
-    // 4️⃣ 플레이리스트 삭제
+    // 5️⃣ 플레이리스트 삭제
     @DeleteMapping("/{playlistId}")
     public ResponseEntity<Void> deletePlaylist(
             @PathVariable Long playlistId,
@@ -62,7 +69,7 @@ public class PlaylistController {
         return ResponseEntity.noContent().build();
     }
 
-    // 5️⃣ 플레이리스트에서 음악 제거
+    // 6️⃣ 플레이리스트에서 음악 제거
     @DeleteMapping("/{playlistId}/musics/{musicId}")
     public ResponseEntity<Void> removeMusicFromPlayList(
             @PathVariable Long playlistId,
@@ -73,7 +80,7 @@ public class PlaylistController {
         return ResponseEntity.noContent().build();
     }
 
-    // 6️⃣ 음악 순서 변경
+    // 7️⃣ 음악 순서 변경
     @PutMapping("/{playlistId}/reorder")
     public ResponseEntity<PlaylistResponse> reorderPlaylist(
             @PathVariable Long playlistId,
@@ -81,6 +88,17 @@ public class PlaylistController {
             @RequestParam String username) {
 
         Playlist playlist = playlistService.reorderPlaylist(playlistId, orderedMusicIds, username);
+        return ResponseEntity.ok(PlaylistResponse.fromEntity(playlist));
+    }
+
+    // 8️⃣ 플레이리스트에 음악 추가
+    @PostMapping("/{playlistId}/musics")
+    public ResponseEntity<PlaylistResponse> addMusicToPlaylist(
+            @PathVariable Long playlistId,
+            @RequestParam Long musicId,
+            @RequestParam String username) {
+
+        Playlist playlist = playlistService.addMusicToPlaylist(playlistId, musicId, username);
         return ResponseEntity.ok(PlaylistResponse.fromEntity(playlist));
     }
 }
