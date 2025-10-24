@@ -1,24 +1,33 @@
 import { create } from "zustand";
 import playlistService from "../services/playlist";
 
-const usePlayListStore = create((set) => ({
+const usePlayListStore = create((set, get) => ({
   playlists: [],
+  username:
+    localStorage.getItem("user") &&
+    JSON.parse(localStorage.getItem("user")).username,
+
+  setUsername: (username) => set({ username }),
   setPlaylists: (playlists) => set({ playlists }),
 
   // 1️⃣ 플레이리스트 조회
   fetchPlaylists: async (playlistId) => {
     try {
       const playlist = await playlistService.getPlaylists(playlistId);
-      set({ playlists: [playlist] }); // 단일 조회 기준
+      set({ playlists: [playlist] });
     } catch (error) {
       console.error("Failed to fetch playlists:", error);
     }
   },
 
   // 2️⃣ 플레이리스트 생성
-  createPlaylist: async (playlistData, username) => {
+  createPlaylist: async (playlistData) => {
+    const { username } = get();
     try {
-      const newPlaylist = await playlistService.createPlaylist(playlistData, username);
+      const newPlaylist = await playlistService.createPlaylist(
+        playlistData,
+        username
+      );
       set((state) => ({ playlists: [...state.playlists, newPlaylist] }));
       return newPlaylist;
     } catch (error) {
@@ -28,7 +37,8 @@ const usePlayListStore = create((set) => ({
   },
 
   // 3️⃣ 플레이리스트 삭제
-  deletePlaylist: async (playlistId, username) => {
+  deletePlaylist: async (playlistId) => {
+    const { username } = get();
     try {
       await playlistService.deletePlaylist(playlistId, username);
       set((state) => ({
@@ -41,7 +51,8 @@ const usePlayListStore = create((set) => ({
   },
 
   // 4️⃣ 플레이리스트 수정
-  updatePlaylist: async (playlistId, playlistData, username) => {
+  updatePlaylist: async (playlistId, playlistData) => {
+    const { username } = get();
     try {
       const updatedPlaylist = await playlistService.updatePlaylist(
         playlistId,
@@ -60,28 +71,27 @@ const usePlayListStore = create((set) => ({
     }
   },
 
-  // 5️⃣ 플레이리스트에서 음악 제거
-  removeSongFromPlaylist: async (playlistId, songId, username) => {
+  // 5️⃣ 음악 제거
+  removeSongFromPlaylist: async (playlistId, songId) => {
+    const { username } = get();
     try {
       await playlistService.removeSongFromPlaylist(playlistId, songId, username);
       set((state) => ({
         playlists: state.playlists.map((pl) =>
           pl.id === playlistId
-            ? {
-                ...pl,
-                musics: pl.musics.filter((song) => song.id !== songId),
-              }
+            ? { ...pl, musics: pl.musics.filter((s) => s.id !== songId) }
             : pl
         ),
       }));
     } catch (error) {
-      console.error("Failed to remove song from playlist:", error);
+      console.error("Failed to remove song:", error);
       throw error;
     }
   },
 
   // 6️⃣ 음악 순서 변경
-  reorderPlaylist: async (playlistId, orderedMusicIds, username) => {
+  reorderPlaylist: async (playlistId, orderedMusicIds) => {
+    const { username } = get();
     try {
       const updatedPlaylist = await playlistService.reorderPlaylist(
         playlistId,

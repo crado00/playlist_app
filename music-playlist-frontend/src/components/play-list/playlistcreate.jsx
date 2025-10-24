@@ -1,7 +1,32 @@
 import { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
+import { authService } from "../../services/auth";
+import usePlayListStore from "../../store/playlistStore";
 
 const PlayListCreate = ({ onClose, onCreate, isEdit, playlist }) => {
+  const [user, setUser] = useState(null);
+  const { createPlaylist, updatePlaylist } = usePlayListStore();
+
+  useEffect(() => {
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
+  }, []);
+  
+
+  const handleCreateOrEdit = () => {
+    const name = document.getElementById("playlist-name").value;
+    const explanation = document.getElementById("playlist-description").value;
+    if (isEdit) {
+      const playlistId = 2; // TODO: 실제 playlist.id 값으로 바꾸기
+      const playlistData = { title: name, explanation, userId: user.id };
+      updatePlaylist(playlistId, playlistData);
+    } else {
+      const playlist = { title: name, explanation, userId: user.id, playlists: [] };
+      //이름 변경
+      createPlaylist(playlist);
+    }
+    onCreate();
+  };
   return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg w-full max-w-2xl">
@@ -73,7 +98,7 @@ const PlayListCreate = ({ onClose, onCreate, isEdit, playlist }) => {
               취소
             </button>
             <button
-              onClick={onCreate}
+              onClick={handleCreateOrEdit}
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
             >
               생성
