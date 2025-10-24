@@ -60,7 +60,6 @@ public class PlaylistService {
 
         playlist.setTitle(request.getTitle());
         playlist.setExplanation(request.getExplanation());
-        playlist.setImageUrl(request.getImageUrl());
 
         return playlistRepository.save(playlist);
     }
@@ -98,7 +97,7 @@ public class PlaylistService {
         return playlistRepository.save(playlist);
     }
 
-    // 🔥 새로운 기능: 플레이리스트에 음악 추가
+    // 플레이리스트에 음악 추가
     public Playlist addMusicToPlaylist(Long playlistId, Long musicId, String username) {
         Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
