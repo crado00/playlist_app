@@ -1,17 +1,19 @@
 package com.team10.music_playlist_backend.service;
 
-import com.team10.music_playlist_backend.dto.*;
-import com.team10.music_playlist_backend.entity.*;
-import com.team10.music_playlist_backend.exception.ResourceNotFoundException;
-import com.team10.music_playlist_backend.repository.*;
+import com.team10.music_playlist_backend.dto.PlaylistEditRequest;
+import com.team10.music_playlist_backend.dto.PlaylistRequest;
+import com.team10.music_playlist_backend.dto.PlaylistResponse;
+import com.team10.music_playlist_backend.entity.Music;
+import com.team10.music_playlist_backend.entity.Playlist;
+import com.team10.music_playlist_backend.entity.User;
+import com.team10.music_playlist_backend.repository.MusicRepository;
+import com.team10.music_playlist_backend.repository.PlaylistRepository;
+import com.team10.music_playlist_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +23,9 @@ public class PlaylistService {
     private final UserRepository userRepository;
     private final MusicRepository musicRepository;
 
-    @Transactional
     public PlaylistResponse createPlaylist(Long userId, PlaylistRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         Playlist playlist = Playlist.builder()
                 .title(request.getTitle())
@@ -33,103 +34,81 @@ public class PlaylistService {
                 .user(user)
                 .build();
 
-        if (request.getMusics() != null) {
-            request.getMusics().forEach(musicDto -> {
-                Music music = new Music();
-//                Music music = Music.builder()
-//                        .title(musicDto.getTitle())
-//                        .artist(musicDto.getArtist())
-//                        .album(musicDto.getAlbum())
-//                        .genre(musicDto.getGenre())
-//                        .duration(musicDto.getDuration())
-//                        .youtubeUrl(musicDto.getYoutubeUrl())
-//                        .playlist(playlist)
-//                        .build();
-                playlist.getMusics().add(music);
-            });
-        }
-
         playlistRepository.save(playlist);
         return PlaylistResponse.fromEntity(playlist);
     }
 
     public Playlist getPlaylistById(Long playlistId) {
         return playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new RuntimeException("플레이리스트를 찾을 수 없습니다."));
     }
 
-    @Transactional
+    public List<PlaylistResponse> getUserPlaylists(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        return playlistRepository.findByUser(user)
+                .stream()
+                .map(PlaylistResponse::fromEntity)
+                .toList();
+    }
+
     public Playlist editPlaylist(Long playlistId, PlaylistEditRequest request, String username) {
-        Playlist playlist = playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
-
+        Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "수정 권한이 없습니다.");
+            throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
         }
 
-        if (request.getTitle() != null && !request.getTitle().isBlank()) {
-            playlist.setTitle(request.getTitle());
-        }
-        if (request.getExplanation() != null) {
-            playlist.setExplanation(request.getExplanation());
-        }
-
-        if (request.getMusicIds() != null && !request.getMusicIds().isEmpty()) {
-            //List<Music> musics = musicRepository.findAllById(request.getMusicIds());
-            //musics.forEach(m -> m.setPlaylist(playlist));
-            List<Music> musics = new ArrayList<>();
-            playlist.getMusics().clear();
-            playlist.getMusics().addAll(musics);
-        }
+        playlist.setTitle(request.getTitle());
+        playlist.setExplanation(request.getExplanation());
+        playlist.setImageUrl(request.getImageUrl());
 
         return playlistRepository.save(playlist);
     }
 
-    @Transactional
     public void deletePlaylist(Long playlistId, String username) {
-        Playlist playlist = playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
-
+        Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제 권한이 없습니다.");
+            throw new RuntimeException("본인의 플레이리스트만 삭제할 수 있습니다.");
         }
-
         playlistRepository.delete(playlist);
     }
 
-    @Transactional
     public void removeMusicFromPlaylist(Long playlistId, Long musicId, String username) {
-        Playlist playlist = playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
-
+        Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+            throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
         }
 
-        //playlist.getMusics().removeIf(m -> m.getId().equals(musicId));
+        playlist.getMusics().removeIf(music -> music.getId().equals(musicId));
         playlistRepository.save(playlist);
     }
 
-    @Transactional
     public Playlist reorderPlaylist(Long playlistId, List<Long> orderedMusicIds, String username) {
-        Playlist playlist = playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new ResourceNotFoundException("플레이리스트를 찾을 수 없습니다."));
-
+        Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+            throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
         }
 
-//        Map<Long, Music> musicMap = playlist.getMusics().stream()
-//                .collect(Collectors.toMap(Music::getId, m -> m));
-        Map<Long, Music> musicMap = new HashMap<>();
-        List<Music> newOrder = orderedMusicIds.stream()
-                .map(musicMap::get)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        List<Music> reordered = orderedMusicIds.stream()
+                .map(id -> musicRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("음악을 찾을 수 없습니다.")))
+                .toList();
 
-        playlist.getMusics().clear();
-        playlist.getMusics().addAll(newOrder);
+        playlist.setMusics(reordered);
+        return playlistRepository.save(playlist);
+    }
 
+    // 🔥 새로운 기능: 플레이리스트에 음악 추가
+    public Playlist addMusicToPlaylist(Long playlistId, Long musicId, String username) {
+        Playlist playlist = getPlaylistById(playlistId);
+        if (!playlist.getUser().getUsername().equals(username)) {
+            throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
+        }
+
+        Music music = musicRepository.findById(musicId)
+                .orElseThrow(() -> new RuntimeException("음악을 찾을 수 없습니다."));
+
+        playlist.getMusics().add(music);
         return playlistRepository.save(playlist);
     }
 }
