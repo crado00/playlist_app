@@ -37,8 +37,14 @@ function Signup() {
 
   
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
-      <h2 className="text-2xl font-bold mb-6 text-center">회원가입</h2>
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-green-500 to-blue-100">
+      <div className="max-w-[420px] space-y-6 my-12">
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl px-12 py-14">
+          <h1 className="text-center mb-6">
+            <span className="text-4xl bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
+              회원가입
+            </span>
+          </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
           <input
           type="text"
@@ -82,7 +88,10 @@ function Signup() {
         >
           회원가입
         </button>
+
       </form>
+        </div>
+      </div>
     </div>
   );
 }
