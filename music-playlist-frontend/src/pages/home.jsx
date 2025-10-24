@@ -2,15 +2,13 @@ import { FiLogOut } from "react-icons/fi";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Home, User } from "lucide-react";
 import Profile from "./profile";
+import MiniYoutubePlayer from "../components/player/player";
 import { useState } from "react";
 import PlayListDetail from "../components/play-list/playlistDetail";
 import MusicSearch from "./MusicSearch";
 const HomeP = () => {
-  const [selectedPlayList, setSelectedPlayList] = useState(null);
-
-  const openPlayListDetail = (playlist) => setSelectedPlayList(playlist);
-  const closePlayListDetail = () => setSelectedPlayList(null);
-
+  const [isPlayer, setIsPlayer] = useState(true);
+  
   return (
     <div className="min-h-screen max-w-2xl mx-auto flex flex-col items-center ">
       <header className="fixed top-0 w-full z-40 max-w-2xl bg-white flex justify-between items-center">
@@ -67,11 +65,7 @@ const HomeP = () => {
           </div>
         </Tabs.Root>
       </div>
-
-      {/* 플레이리스트 상세 모달 */}
-      {selectedPlayList && (
-        <PlayListDetail playlist={selectedPlayList} onClose={closePlayListDetail} />
-      )}
+      {isPlayer && (<MiniYoutubePlayer />)}
     </div>
   );
 };

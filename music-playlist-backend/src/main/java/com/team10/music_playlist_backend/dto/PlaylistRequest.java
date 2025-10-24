@@ -12,5 +12,5 @@ public class PlaylistRequest {
     private String title;
     private String explanation;
     private String imageUrl;
-    private List<MusicRequest> musics;
+    private List<SongDetailsResponse> musics;
 }
