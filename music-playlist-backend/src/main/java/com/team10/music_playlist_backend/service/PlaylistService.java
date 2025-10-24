@@ -35,15 +35,16 @@ public class PlaylistService {
 
         if (request.getMusics() != null) {
             request.getMusics().forEach(musicDto -> {
-                Music music = Music.builder()
-                        .title(musicDto.getTitle())
-                        .artist(musicDto.getArtist())
-                        .album(musicDto.getAlbum())
-                        .genre(musicDto.getGenre())
-                        .duration(musicDto.getDuration())
-                        .youtubeUrl(musicDto.getYoutubeUrl())
-                        .playlist(playlist)
-                        .build();
+                Music music = new Music();
+//                Music music = Music.builder()
+//                        .title(musicDto.getTitle())
+//                        .artist(musicDto.getArtist())
+//                        .album(musicDto.getAlbum())
+//                        .genre(musicDto.getGenre())
+//                        .duration(musicDto.getDuration())
+//                        .youtubeUrl(musicDto.getYoutubeUrl())
+//                        .playlist(playlist)
+//                        .build();
                 playlist.getMusics().add(music);
             });
         }
@@ -74,8 +75,9 @@ public class PlaylistService {
         }
 
         if (request.getMusicIds() != null && !request.getMusicIds().isEmpty()) {
-            List<Music> musics = musicRepository.findAllById(request.getMusicIds());
-            musics.forEach(m -> m.setPlaylist(playlist));
+            //List<Music> musics = musicRepository.findAllById(request.getMusicIds());
+            //musics.forEach(m -> m.setPlaylist(playlist));
+            List<Music> musics = new ArrayList<>();
             playlist.getMusics().clear();
             playlist.getMusics().addAll(musics);
         }
@@ -104,7 +106,7 @@ public class PlaylistService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
         }
 
-        playlist.getMusics().removeIf(m -> m.getId().equals(musicId));
+        //playlist.getMusics().removeIf(m -> m.getId().equals(musicId));
         playlistRepository.save(playlist);
     }
 
@@ -117,9 +119,9 @@ public class PlaylistService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
         }
 
-        Map<Long, Music> musicMap = playlist.getMusics().stream()
-                .collect(Collectors.toMap(Music::getId, m -> m));
-
+//        Map<Long, Music> musicMap = playlist.getMusics().stream()
+//                .collect(Collectors.toMap(Music::getId, m -> m));
+        Map<Long, Music> musicMap = new HashMap<>();
         List<Music> newOrder = orderedMusicIds.stream()
                 .map(musicMap::get)
                 .filter(Objects::nonNull)
