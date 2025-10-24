@@ -17,11 +17,11 @@ const PlayListCreate = ({ onClose, onCreate, isEdit, playlist }) => {
     const name = document.getElementById("playlist-name").value;
     const explanation = document.getElementById("playlist-description").value;
     if (isEdit) {
-      const playlistId = 2; // TODO: 실제 playlist.id 값으로 바꾸기
-      const playlistData = { title: name, explanation, userId: user.id };
+      const playlistId = playlist.id;
+      const playlistData = { name, explanation, userId: user.id };
       updatePlaylist(playlistId, playlistData);
     } else {
-      const playlist = { title: name, explanation, userId: user.id, playlists: [] };
+      const playlist = { name, explanation, userId: user.id, playlists: [] };
       //이름 변경
       createPlaylist(playlist);
     }
