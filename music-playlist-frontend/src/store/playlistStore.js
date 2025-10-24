@@ -109,6 +109,16 @@ const usePlayListStore = create((set, get) => ({
       throw error;
     }
   },
+
+  getPlaylistsByUser: async () => {
+    const { username } = get();
+    try {
+      const userPlaylists = await playlistService.getPlaylistsByUser(username);
+      set({ playlists: userPlaylists });
+    } catch (error) {
+      console.error("Failed to fetch user's playlists:", error);
+    }
+  },
 }));
 
 export default usePlayListStore;

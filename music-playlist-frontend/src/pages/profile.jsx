@@ -11,7 +11,7 @@ import PlayListDetail from "../components/play-list/playlistDetail";
 const Profile = () => {
   const { userProfile, getUserProfile, updateProfile } = useUserStore(); // ✅ 이름 수정
   const [showEditModal, setShowEditModal] = useState(false);
-  const { createPlayList } = usePlayListStore();
+  const { getPlaylistsByUser } = usePlayListStore();
   const [showplaylistCreateModal, setShowPlaylistCreateModal] = useState(false);
   const [isPlaylistEdit, setIsPlaylistEdit] = useState(false);
   const [selectedPlayList, setSelectedPlayList] = useState(null);
@@ -20,21 +20,19 @@ const Profile = () => {
     ? JSON.parse(localStorage.getItem("user"))
     : null;
 
-  // 임시 플레이리스트 데이터
-  const playlist = [
-    { id: 1, name: "playlist 1", explanation: "hello" },
-    { id: 2, name: "User 2", explanation: "hi" },
-    { id: 3, name: "User 3", explanation: "good" },
-    { id: 4, name: "User 4", explanation: "day" },
-    { id: 5, name: "User 5", explanation: "nice" },
-  ];
-
-
-
+  const [playlist, setPlaylist] = useState([]);
+  
   useEffect(() => {
-    if (user && user.id) {
-      getUserProfile(user.id);
-    }
+    const fetchData = async () => {
+      if (user && user.id) {
+        await getUserProfile(user.id);
+        await getPlaylistsByUser(); // 스토어가 내부적으로 상태를 바꿈
+        const playlistsFromStore = usePlayListStore.getState().playlists;
+        setPlaylist(playlistsFromStore);
+      }
+    };
+    console.log("useEffect in profile: " + playlist);
+    fetchData();
   }, []);
 
 
