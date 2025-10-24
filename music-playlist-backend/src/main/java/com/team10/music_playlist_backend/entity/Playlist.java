@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Entity(name = "playlists")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor @Builder
 public class Playlist {

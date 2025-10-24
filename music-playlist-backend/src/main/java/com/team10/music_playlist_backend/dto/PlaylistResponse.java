@@ -16,7 +16,7 @@ public class PlaylistResponse {
     private String title;
     private String explanation;
     private String imageUrl;
-    private List<MusicResponse> musics;
+    private List<SongDetailsResponse> musics;
 
     public static PlaylistResponse fromEntity(Playlist playlist) {
         return PlaylistResponse.builder()
@@ -25,7 +25,7 @@ public class PlaylistResponse {
                 .explanation(playlist.getExplanation())
                 .imageUrl(playlist.getImageUrl())
                 .musics(playlist.getMusics().stream()
-                        .map(MusicResponse::fromEntity)
+                        .map(SongDetailsResponse::fromEntity)
                         .collect(Collectors.toList()))
                 .build();
     }
