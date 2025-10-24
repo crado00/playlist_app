@@ -28,6 +28,7 @@ const playListService = {
     const response = await api.put(`/api/playlists/${playlistId}/edit`, playlistData, {
       params: { username },
     });
+    console.log("Updated playlist response:", response.data);
     return response.data;
   },
 

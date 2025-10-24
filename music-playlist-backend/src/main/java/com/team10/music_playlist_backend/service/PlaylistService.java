@@ -72,10 +72,22 @@ public class PlaylistService {
         if (!playlist.getUser().getUsername().equals(username)) {
             throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
         }
+        List<Music> musicList = request.getMusics().stream()
+                .map(songDto -> musicRepository.findById(songDto.getId())
+                        .orElseGet(() -> {
+                            // DB에 없으면 새로 저장
+                            Music newMusic = Music.builder()
+                                    .id(songDto.getId())
+                                    .title(songDto.getTitle())      // DTO의 이름 -> 엔티티 title
+                                    .artist(songDto.getArtist())
+                                    .build();
+                            return musicRepository.save(newMusic);
+                        })
+                ).toList();
 
         playlist.setTitle(request.getTitle());
         playlist.setExplanation(request.getExplanation());
-
+        playlist.setMusics(request.getMusics());
         return playlistRepository.save(playlist);
     }
 

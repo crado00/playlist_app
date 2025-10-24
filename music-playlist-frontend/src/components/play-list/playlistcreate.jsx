@@ -5,6 +5,7 @@ import usePlayListStore from "../../store/playlistStore";
 import useSearchStore from "../../store/searchStore";
 import Slider from "react-slick";
 import SongCard from "../song/songCard";
+
 const PlayListCreate = ({ onClose, onCreate, isEdit, playlist }) => {
   const [user, setUser] = useState(null);
   const { createPlaylist, updatePlaylist } = usePlayListStore();
@@ -12,10 +13,18 @@ const PlayListCreate = ({ onClose, onCreate, isEdit, playlist }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [ addSong, setAddSong] = useState([]);
+
+  
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);
   }, []);
+  
+  useEffect(() => {
+    if (isEdit && playlist && playlist.musics) {
+      setAddSong(playlist.musics);
+    }
+  }, [isEdit, playlist]);
   
   useEffect(() => {
     if (searchQuery.trim() === "") return;

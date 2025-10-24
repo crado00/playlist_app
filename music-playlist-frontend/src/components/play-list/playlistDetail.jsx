@@ -10,7 +10,7 @@ useEffect(() => {
   }
 }, [playlist]); // playlist가 바뀔 때만 실행
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white w-11/12 max-w-lg rounded-xl p-6 relative">
         <button
           className="absolute top-3 right-3 text-gray-500 hover:text-black font-bold text-lg"
