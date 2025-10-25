@@ -30,7 +30,7 @@ const HomeP = () => {
         </div>
       </header>
 
-      <div className="flex-1 w-full max-w-2xl pb-16 pt-20">
+      <div className="flex-1 w-full max-w-2xl pb-16 pt-15">
         <Tabs.Root defaultValue="home" className="w-full">
           <Tabs.Content value="home" className="text-center">
             <MusicSearch />
@@ -47,23 +47,23 @@ const HomeP = () => {
               <Tabs.Trigger
                 value="home"
                 className="flex flex-col items-center gap-1 text-gray-500 hover:text-black 
-                  data-[state=active]:text-black relative pb-1
+                  data-[state=active]:text-black relative pb-2 px-32 py-2
                   after:content-[''] after:absolute after:bottom-0 after:h-[2px] after:w-5 after:bg-black 
                   after:scale-x-0 data-[state=active]:after:scale-x-100 
                   after:transition-transform after:origin-center"
               >
-                <Home size={24} />
+                <Home size={28} />
                 <span className="text-xs">홈</span>
               </Tabs.Trigger>
               <Tabs.Trigger
                 value="user"
                 className="flex flex-col items-center gap-1 text-gray-500 hover:text-black 
-                  data-[state=active]:text-black relative pb-1
+                  data-[state=active]:text-black relative pb-2 px-32 py-2
                   after:content-[''] after:absolute after:bottom-0 after:h-[2px] after:w-5 after:bg-black 
                   after:scale-x-0 data-[state=active]:after:scale-x-100 
                   after:transition-transform after:origin-center"
               >
-                <User size={24} />
+                <User size={28} />
                 <span className="text-xs">사용자</span>
               </Tabs.Trigger>
             </Tabs.List>

@@ -66,7 +66,7 @@ const Profile = () => {
   const playListSize = playlist ? playlist.length : 0;
   return (
     <div className="bg-red-100">
-      <div className="bg-white min-h-screen max-w-2xl mx-auto">
+      <div className="bg-white min-h-screen max-w-2xl mx-auto ">
         <ProfileInfo
           user={user}
           playListSize={playListSize}
