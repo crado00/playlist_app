@@ -12,8 +12,8 @@ import com.team10.music_playlist_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,15 +22,30 @@ public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final UserRepository userRepository;
     private final MusicRepository musicRepository;
+    private final SearchService searchService;
 
     public PlaylistResponse createPlaylist(Long userId, PlaylistRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
+        List<Music> musicList = request.getMusics().stream()
+                .map(songDto -> musicRepository.findById(songDto.getId())
+                        .orElseGet(() -> {
+                            // DB에 없으면 새로 저장
+                            Music newMusic = Music.builder()
+                                    .id(songDto.getId())
+                                    .title(songDto.getName())      // DTO의 이름 -> 엔티티 title
+                                    .artist(songDto.getSinger())
+                                    .build();
+                            return musicRepository.save(newMusic);
+                        })
+                ).toList();
+
         Playlist playlist = Playlist.builder()
                 .title(request.getTitle())
                 .explanation(request.getExplanation())
                 .imageUrl(request.getImageUrl())
+                .musics(musicList)
                 .user(user)
                 .build();
 
@@ -57,10 +72,22 @@ public class PlaylistService {
         if (!playlist.getUser().getUsername().equals(username)) {
             throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
         }
+        List<Music> musicList = request.getMusics().stream()
+                .map(songDto -> musicRepository.findById(songDto.getId())
+                        .orElseGet(() -> {
+                            // DB에 없으면 새로 저장
+                            Music newMusic = Music.builder()
+                                    .id(songDto.getId())
+                                    .title(songDto.getTitle())      // DTO의 이름 -> 엔티티 title
+                                    .artist(songDto.getArtist())
+                                    .build();
+                            return musicRepository.save(newMusic);
+                        })
+                ).toList();
 
         playlist.setTitle(request.getTitle());
         playlist.setExplanation(request.getExplanation());
-
+        playlist.setMusics(request.getMusics());
         return playlistRepository.save(playlist);
     }
 
@@ -72,7 +99,8 @@ public class PlaylistService {
         playlistRepository.delete(playlist);
     }
 
-    public void removeMusicFromPlaylist(Long playlistId, Long musicId, String username) {
+    // ✅ musicId를 String으로 변경
+    public void removeMusicFromPlaylist(Long playlistId, String musicId, String username) {
         Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
             throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
@@ -82,7 +110,8 @@ public class PlaylistService {
         playlistRepository.save(playlist);
     }
 
-    public Playlist reorderPlaylist(Long playlistId, List<Long> orderedMusicIds, String username) {
+    // ✅ orderedMusicIds를 List<String>으로 변경
+    public Playlist reorderPlaylist(Long playlistId, List<String> orderedMusicIds, String username) {
         Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
             throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
@@ -97,8 +126,8 @@ public class PlaylistService {
         return playlistRepository.save(playlist);
     }
 
-    // 플레이리스트에 음악 추가
-    public Playlist addMusicToPlaylist(Long playlistId, Long musicId, String username) {
+    // ✅ musicId를 String으로 변경
+    public Playlist addMusicToPlaylist(Long playlistId, String musicId, String username) {
         Playlist playlist = getPlaylistById(playlistId);
         if (!playlist.getUser().getUsername().equals(username)) {
             throw new RuntimeException("본인의 플레이리스트만 수정할 수 있습니다.");
