@@ -1,14 +1,19 @@
 import Button from "../common/Button";
 import { useEffect, useState } from "react";
-const PlayListDetail = ({ playlist, onClose, onEdit }) => {
+const PlayListDetail = ({ playlist, onClose, onEdit, onPlay }) => {
   const [songs, setSong] = useState(playlist.song || []);
 
 useEffect(() => {
   if (playlist && playlist.musics) {
     setSong(playlist.musics);
-    console.log("PlaylistDetail useEffect songs: ", playlist.musics);
   }
 }, [playlist]); // playlist가 바뀔 때만 실행
+
+
+const hendleSetPlaylist = (list) => {
+  onPlay(list);
+  onClose();
+};
   return (
     <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white w-11/12 max-w-lg rounded-xl p-6 relative">
@@ -29,21 +34,22 @@ useEffect(() => {
               className="flex justify-between items-center p-2 border rounded hover:bg-gray-100"
             >
               <span>{song.name}</span>
-              <Button
-                title="재생"
-                customStyles="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
-                onClick={() => console.log(`재생 버튼 클릭: ${song.name}`)}
-              />
+
             </div>
           ))}
+          <div className="flex justify-end mt-4 gap-2">
+            <Button
+              title="재생"
+              customStyles="bg-blue-500 hover:bg-blue-600 mb-4"
+              onClick={() => hendleSetPlaylist(playlist)}
+            />
+            <Button
+              title="변경"
+              customStyles="bg-green-500 hover:bg-green-600 mb-4"
+              onClick={() => onEdit && onEdit(playlist)}
+            />
+          </div>
 
-        {onEdit && (
-          <Button
-            title="변경"
-            customStyles="bg-green-500 hover:bg-green-600 mb-4"
-            onClick={() => onEdit && onEdit(playlist)}
-          />
-        )}
         </div>
       </div>
     </div>

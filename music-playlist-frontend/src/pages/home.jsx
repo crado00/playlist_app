@@ -2,14 +2,20 @@ import { FiLogOut } from "react-icons/fi";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Home, User } from "lucide-react";
 import Profile from "./profile";
-import MiniYoutubePlayer from "../components/player/player";
-import { useState } from "react";
+import MiniItunesPlayer from "../components/player/player";
+import { useEffect, useState } from "react";
 import MusicSearch from "./MusicSearch";
 import useAuthStore from "../store/authStore";
 const HomeP = () => {
   const [isPlayer, setIsPlayer] = useState(false);
   const { logout } = useAuthStore();
-  
+  const [playlist, setPlaylist] = useState([]);
+  const [playerSong, setPlayerSong] = useState({ musics: [] });
+
+  useEffect(() => {
+    console.log("HomeP playlist changed:", playerSong);
+  }, [playerSong]);
+
   const hendlerlogout = () => {
     // 로그아웃 로직 구현
     logout();
@@ -38,7 +44,7 @@ const HomeP = () => {
 
           <Tabs.Content value="user">
             {/* Profile에 onSelectPlayList 콜백 전달 */}
-            <Profile />
+            <Profile playlist={playlist} setPlaylist={setPlaylist} setPlayer={setPlayerSong}/>
           </Tabs.Content>
 
           {/* 하단 탭바 */}
@@ -70,7 +76,9 @@ const HomeP = () => {
           </div>
         </Tabs.Root>
       </div>
-      {isPlayer && (<MiniYoutubePlayer />)}
+        {playerSong && playerSong.musics && playerSong.musics.length > 0 && (
+          <MiniItunesPlayer playlist={playerSong.musics} setPlayer={setPlayerSong}/>
+        )}
     </div>
   );
 };

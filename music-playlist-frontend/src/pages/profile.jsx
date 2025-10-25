@@ -8,8 +8,8 @@ import usePlayListStore from "../store/playlistStore";
 import PlayListCreate from "../components/play-list/playlistcreate";
 import PlayListDetail from "../components/play-list/playlistDetail";
 
-const Profile = () => {
-  const { userProfile, getUserProfile, updateProfile } = useUserStore(); // ✅ 이름 수정
+const Profile = ({ playlist, setPlaylist, setPlayer }) => {
+  const { userProfile, getUserProfile } = useUserStore(); // ✅ 이름 수정
   const [showEditModal, setShowEditModal] = useState(false);
   const { getPlaylistsByUser, deletePlaylist} = usePlayListStore();
   const [showplaylistCreateModal, setShowPlaylistCreateModal] = useState(false);
@@ -19,8 +19,6 @@ const Profile = () => {
   const user = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
     : null;
-
-  const [playlist, setPlaylist] = useState([]);
   
   useEffect(() => {
     const fetchData = async () => {
@@ -104,6 +102,7 @@ const Profile = () => {
         <PlayListDetail
           playlist={selectedPlayList}
           onClose={() => setSelectedPlayList(null)}
+          onPlay={setPlayer}
           onEdit={handleEditClick}
       />
 )}

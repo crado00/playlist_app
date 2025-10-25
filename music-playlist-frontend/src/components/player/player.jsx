@@ -1,122 +1,94 @@
-// MiniYoutubePlayerWithPlaylist.jsx
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { FiX } from "react-icons/fi";
+import Slider from "react-slick";
 
-const playlist = [
-  { id: "dQw4w9WgXcQ", title: "Never Gonna Give You Up" },
-  { id: "3JZ_D3ELwOQ", title: "Uptown Funk" },
-  { id: "L_jWHffIx5E", title: "Smells Like Teen Spirit" },
-  { id: "fJ9rUzIMcZQ", title: "Queen - Bohemian Rhapsody" },
-  { id: "eY52Zsg-KVI", title: "Imagine Dragons - Believer" },
-];
-
-
-const MiniYoutubePlayerWithPlaylist = () => {
-  const playerRef = useRef(null);
+const MiniItunesPlayer = ({ playlist, setPlayer }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isApiReady, setIsApiReady] = useState(false);
+  const [track, setTrack] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const audioRef = useRef(null);
 
-  // 1. IFrame API를 한 번만 로드
-  useEffect(() => {
-    if (!window.YT) {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.body.appendChild(tag);
-
-      window.onYouTubeIframeAPIReady = () => {
-        setIsApiReady(true);
-      };
-    } else {
-      setIsApiReady(true);
+  // iTunes API에서 현재 곡 가져오기
+  const fetchTrack = async (song) => {
+    if (!song) return;
+    try {
+      const query = encodeURIComponent(`${song.name} ${song.singer}`);
+      const response = await fetch(`https://itunes.apple.com/search?term=${query}&entity=musicTrack`);
+      const data = await response.json();
+      if (data.results && data.results.length > 0) {
+        setTrack(data.results[0]);
+      } else {
+        setTrack(null);
+      }
+    } catch (error) {
+      console.error("iTunes API 오류:", error);
+      setTrack(null);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
-  // 2. API 준비되면 플레이어 생성
+  // playlist나 currentIndex가 바뀌면 해당 곡 가져오기
   useEffect(() => {
-    if (isApiReady && playerRef.current === null) {
-      playerRef.current = new window.YT.Player("mini-player", {
-        height: "180",
-        width: "320",
-        videoId: playlist[currentIndex].id,
-        events: {
-          onStateChange: (event) => {
-            if (event.data === window.YT.PlayerState.ENDED) handleNext();
-          },
-        },
-      });
+    console.log("MiniItunesPlayer playlist or index changed:", playlist, currentIndex);
+    if (!playlist || playlist.length === 0) {
+      setLoading(false);
+      return;
     }
-  }, [isApiReady, currentIndex]);
+    setLoading(true);
+    fetchTrack(playlist[currentIndex]);
+  }, [playlist, currentIndex]);
 
-  // 버튼 핸들러
-  const handlePlay = () => playerRef.current?.playVideo();
-  const handlePause = () => playerRef.current?.pauseVideo();
-  const handleNext = () => {
+  // 다음 곡 자동 재생
+  const handleEnded = () => {
     const nextIndex = (currentIndex + 1) % playlist.length;
     setCurrentIndex(nextIndex);
-    playerRef.current?.loadVideoById(playlist[nextIndex].id);
   };
-  const handlePrev = () => {
-    const prevIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-    setCurrentIndex(prevIndex);
-    playerRef.current?.loadVideoById(playlist[prevIndex].id);
-  };
-  const handleSelect = (index) => {
-    setCurrentIndex(index);
-    playerRef.current?.loadVideoById(playlist[index].id);
-  };
+
+  if (loading) return <div>불러오는 중...</div>;
+  if (!track) return <div>음악 정보를 불러올 수 없습니다.</div>;
 
   return (
-    <div style={{
-      position: "fixed",
-      bottom: "20px",
-      right: "20px",
-      width: "360px",
-      backgroundColor: "#fff",
-      border: "1px solid #ccc",
-      borderRadius: "8px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-      padding: "8px",
-      zIndex: 1000,
-    }}>
-      <div id="mini-player" style={{ width: "320px", height: "180px", marginBottom: "8px" }}></div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-        <button onClick={handlePrev}>◀ 이전</button>
-        <button onClick={handlePlay}>▶ 재생</button>
-        <button onClick={handlePause}>⏸ 일시정지</button>
-        <button onClick={handleNext}>다음 ▶</button>
+    <div className="p-4 flex flex-col items-center bg-gray-100 rounded-xl shadow-xl shadow-black/30 fixed bottom-4 right-4 z-50 border w-sm h-sm">
+      <div className="flex flex-col items-end m-2 w-full">
+        <FiX size={20} className="cursor-pointer" onClick={() => setPlayer([])} />
       </div>
+      <img
+        src={track.artworkUrl100}
+        alt={track.trackName}
+        className="rounded-xl w-32 h-32 mb-3"
+      />
+      <h2 className="text-lg font-semibold">{track.trackName}</h2>
+      <p className="text-gray-600 mb-3">{track.artistName}</p>
 
-      {/* 가로 스크롤 플레이리스트 */}
-      <div style={{
-        display: "flex",
-        overflowX: "auto",
-        gap: "8px",
-        paddingBottom: "4px"
-      }}>
-        {playlist.map((item, index) => (
-          <div
-            key={item.id}
-            onClick={() => handleSelect(index)}
-            style={{
-              minWidth: "100px",
-              cursor: "pointer",
-              padding: "4px",
-              border: index === currentIndex ? "2px solid #007bff" : "1px solid #ccc",
-              borderRadius: "4px",
-              textAlign: "center",
-              backgroundColor: "#f9f9f9",
-            }}
-          >
-            <div style={{ fontSize: "12px", marginBottom: "4px" }}>{item.title}</div>
-            <img
-              src={`https://img.youtube.com/vi/${item.id}/default.jpg`}
-              alt={item.title}
-              style={{ width: "100%" }}
-            />
-          </div>
-        ))}
+      <audio
+        ref={audioRef}
+        controls
+        src={track.previewUrl}
+        className="w-full mt-2 rounded"
+        onEnded={handleEnded}
+      >
+        <source src={track.previewUrl} type="audio/mpeg" />
+        브라우저가 오디오 태그를 지원하지 않습니다.
+      </audio>
+
+      {/* 전체 리스트 보여주기 */}
+      <div className="flex gap-2 overflow-x-auto mt-4">
+          {playlist.map((song, index) => (
+            <div
+              key={song.id}
+              onClick={() => setCurrentIndex(index)}
+              className={`p-2 cursor-pointer border rounded ${
+                index === currentIndex ? "border-blue-500" : "border-gray-300"
+              }`}
+            >
+              <p className="text-sm">{song.name}</p>
+              <p className="text-xs text-gray-600">{song.singer}</p>
+            </div>
+          ))}
       </div>
     </div>
   );
 };
 
-export default MiniYoutubePlayerWithPlaylist;
+export default MiniItunesPlayer;
