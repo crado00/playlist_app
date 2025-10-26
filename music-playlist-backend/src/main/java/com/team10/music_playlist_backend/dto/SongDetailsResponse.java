@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class SongDetailsResponse {
-    private Long id;
+    private String id;
     private String name;
     private String singer;
     private String explanation;

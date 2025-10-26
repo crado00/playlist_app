@@ -2,6 +2,7 @@ package com.team10.music_playlist_backend.controller;
 
 import java.util.List;
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,7 +84,7 @@ public class PlaylistController {
     @DeleteMapping("/{playlistId}/musics/{musicId}")
     public ResponseEntity<Void> removeMusicFromPlayList(
             @PathVariable Long playlistId,
-            @PathVariable Long musicId,
+            @PathVariable String musicId,  // ✅ String으로 변경
             @RequestParam String username) {
 
         playlistService.removeMusicFromPlaylist(playlistId, musicId, username);
@@ -94,7 +95,7 @@ public class PlaylistController {
     @PutMapping("/{playlistId}/reorder")
     public ResponseEntity<PlaylistResponse> reorderPlaylist(
             @PathVariable Long playlistId,
-            @RequestBody List<Long> orderedMusicIds,
+            @RequestBody List<String> orderedMusicIds,  // ✅ String으로 변경
             @RequestParam String username) {
 
         Playlist playlist = playlistService.reorderPlaylist(playlistId, orderedMusicIds, username);
@@ -105,7 +106,7 @@ public class PlaylistController {
     @PostMapping("/{playlistId}/musics")
     public ResponseEntity<PlaylistResponse> addMusicToPlaylist(
             @PathVariable Long playlistId,
-            @RequestParam Long musicId,
+            @RequestParam String musicId,  // ✅ String으로 변경
             @RequestParam String username) {
 
         Playlist playlist = playlistService.addMusicToPlaylist(playlistId, musicId, username);

@@ -1,6 +1,6 @@
 import Button from "../common/Button";
 
-const PlayListCard = ({ id, name, explanation, deletePlayList }
+const PlayListCard = ({ id, title, explanation, deletePlayList }
 ) => {
 
   return (
@@ -12,7 +12,7 @@ const PlayListCard = ({ id, name, explanation, deletePlayList }
             className="w-full h-50 rounded-t-xl object-cover"
         />
         <div className="px-2 pb-2 flex flex-col gap-1">
-            <h2 className="font-semibold text-lg">{name}</h2>
+            <h2 className="font-semibold text-lg">{title}</h2>
             <p className="text-sm text-gray-500">{explanation}</p>
         </div>
         <div className="px-2 pb-2 mt-auto">
