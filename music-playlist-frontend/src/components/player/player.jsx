@@ -73,7 +73,7 @@ const MiniItunesPlayer = ({ playlist, setPlayer }) => {
       </audio>
 
       {/* 전체 리스트 보여주기 */}
-      <div className="flex gap-2 overflow-x-auto mt-4">
+      <div className="flex gap-2 overflow-x-auto mt-4 ">
           {playlist.map((song, index) => (
             <div
               key={song.id}

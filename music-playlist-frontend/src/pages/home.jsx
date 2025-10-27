@@ -36,7 +36,7 @@ const HomeP = () => {
         </div>
       </header>
 
-      <div className="flex-1 w-full max-w-2xl pb-16 pt-15">
+      <div className="flex-1 w-full max-w-2xl pb-16 pt-20">
         <Tabs.Root defaultValue="home" className="w-full">
           <Tabs.Content value="home" className="text-center">
             <MusicSearch />
